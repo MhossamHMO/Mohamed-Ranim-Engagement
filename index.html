@@ -178,7 +178,10 @@
   .venue .lead{margin:0}
   .archmap{position:relative;display:block;aspect-ratio:4/5;border-radius:999px 999px 18px 18px;overflow:hidden;border:1px solid var(--tan);
     background:var(--beige);box-shadow:0 0 0 8px var(--cream),0 0 0 9px var(--sand),0 24px 50px rgba(90,65,50,.16)}
-  .archmap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;filter:sepia(.5) saturate(.7) contrast(.95)}
+  .archmap .mapart{position:absolute;inset:0;width:100%;height:100%;transition:transform .8s ease}
+  .archmap:hover .mapart{transform:scale(1.05)}
+  .mapart .pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2s ease-out infinite}
+  @keyframes pulse{from{transform:scale(.6);opacity:.9}to{transform:scale(2.6);opacity:0}}
   .archmap .pin{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);white-space:nowrap;display:flex;align-items:center;gap:6px;
     font-family:var(--sans);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--paper);background:var(--brown);padding:9px 16px;border-radius:999px}
   .archmap .pin svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6}
@@ -400,8 +403,18 @@
 
   <div class="tint"><section class="block venue">
     <a class="archmap rv left" href="https://maps.app.goo.gl/LARYvJc8aBTiP4mh6" target="_blank" rel="noopener" aria-label="Open Rihanna Venue in Google Maps">
-      <iframe title="Map to Rihanna Venue" loading="lazy" tabindex="-1"
-        src="https://www.openstreetmap.org/export/embed.html?bbox=31.1715%2C29.9553%2C31.1835%2C29.9643&amp;layer=mapnik&amp;marker=29.9598171%2C31.1775049"></iframe>
+      <svg class="mapart" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <rect width="400" height="500" fill="#f3eadb"/>
+        <g fill="#eadcc4"><rect x="30" y="150" width="120" height="90" rx="6"/><rect x="250" y="120" width="130" height="110" rx="6"/><rect x="40" y="330" width="110" height="120" rx="6"/><rect x="262" y="320" width="120" height="70" rx="6"/><rect x="180" y="40" width="50" height="60" rx="6"/></g>
+        <g fill="#d9c8aa" opacity=".8"><circle cx="90" cy="290" r="16"/><circle cx="120" cy="300" r="11"/><circle cx="320" cy="270" r="14"/><circle cx="300" cy="430" r="18"/><circle cx="330" cy="440" r="11"/></g>
+        <g fill="none" stroke="#fffdf8" stroke-linecap="round"><path d="M-10 260C90 250 150 300 205 275S330 250 410 290" stroke-width="20"/><path d="M205 -10V510" stroke-width="16"/><path d="M-10 120C80 110 150 130 205 110" stroke-width="10"/><path d="M205 400C270 410 330 400 410 410" stroke-width="10"/><path d="M160 275V510" stroke-width="8"/></g>
+        <g fill="none" stroke="#d3bd9c" stroke-width="1.2" stroke-dasharray="5 7"><path d="M-10 260C90 250 150 300 205 275S330 250 410 290"/><path d="M205 -10V510"/></g>
+        <g transform="translate(318,150)" stroke="#8a6a4f" fill="none" stroke-width="1.3"><circle r="17"/><path d="M0 -12L4 0L0 12L-4 0z" fill="#8a6a4f"/><text y="-22" text-anchor="middle" font-family="Jost,Arial,sans-serif" font-size="10" fill="#8a6a4f" stroke="none">N</text></g>
+        <circle class="pulse" cx="205" cy="275" r="16" fill="none" stroke="#5a4132" stroke-width="2"/>
+        <ellipse cx="205" cy="277" rx="12" ry="4" fill="#5a4132" opacity=".25"/>
+        <path d="M205 276s-26-27-26-48a26 26 0 0 1 52 0c0 21-26 48-26 48z" fill="#5a4132"/><circle cx="205" cy="227" r="10" fill="#faf6ee"/>
+        <g text-anchor="middle"><rect x="125" y="296" width="160" height="36" rx="18" fill="#fffdf8" stroke="#cdb796"/><text x="205" y="320" font-family="'Cormorant Garamond','Times New Roman',serif" font-weight="600" font-size="20" fill="#33241b">Rihanna Venue</text></g>
+      </svg>
       <span class="pin"><svg viewBox="0 0 24 24"><path d="M12 21s6.5-6.2 6.5-11A6.5 6.5 0 0 0 5.5 10c0 4.8 6.5 11 6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>Tap for directions</span>
     </a>
     <div class="vtext">
