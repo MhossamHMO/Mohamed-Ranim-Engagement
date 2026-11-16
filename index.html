@@ -111,6 +111,12 @@
     background:rgba(250,246,238,.9);padding:2px 5px;border-radius:6px}
   #rail span.a{left:0}#rail span.b{right:0}
 
+  #talk{position:absolute;inset:0;pointer-events:none}
+  #talk span{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;font-family:var(--serif);font-style:italic;font-weight:600;
+    font-size:clamp(16px,2.2vh,20px);line-height:1.2;color:var(--brown);background:#fffdf8;border:1px solid #cdb796;border-radius:999px;
+    padding:5px 14px 6px;box-shadow:0 4px 12px rgba(51,36,27,.16)}
+  #talk span::after{content:"";position:absolute;left:var(--tail,50%);bottom:-6px;width:10px;height:10px;margin-left:-5px;background:#fffdf8;
+    border-right:1px solid #cdb796;border-bottom:1px solid #cdb796;transform:rotate(45deg)}
   #confetti{position:absolute;inset:0;pointer-events:none;opacity:0;overflow:hidden}
   #confetti i{position:absolute;top:-4%;width:8px;height:12px;border-radius:2px;animation:fall linear infinite}
   @keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
@@ -419,7 +425,6 @@
         <g id="glows" opacity="0"></g>
         <g id="bulbs"></g>
         <g id="fireworks" opacity="0"></g>
-        <g id="bubbles"></g>
         <!-- the ring exchange, close up -->
         <g id="rings" opacity="0">
           <circle cx="800" cy="748" r="112" fill="#faf6ee" stroke="#b89a78" stroke-width="2"/>
@@ -460,6 +465,7 @@
     </svg>
 
     <div id="confetti"></div>
+    <div id="talk" aria-hidden="true"></div>
 
     <div id="title">
       <div class="pre">Together with their families</div>
@@ -585,14 +591,14 @@
      ===================================================================== */
   var CHAPTERS = [
     { at:"16:00", title:"Doors open",              text:"Welcome to Rihanna Venue." },
-    { at:"16:15", title:"Into the garden",         text:"An open-air evening, tables dressed and waiting." },
-    { at:"16:30", title:"Guests take their seats", text:"Family and friends settle in." },
-    { at:"17:00", title:"The first dance",         text:"Mohamed & Ranim arrive and the floor opens." },
-    { at:"17:45", title:"The rings",               text:"Seated together, Mohamed places the ring on Ranim's hand, then Ranim on his." },
-    { at:"18:00", title:"Let's celebrate",         text:"Applause, music and everyone back on the floor." },
-    { at:"18:30", title:"Dinner is served",        text:"Take a seat and enjoy." },
-    { at:"19:15", title:"A slow dance",            text:"Under the lights, as the night settles." },
-    { at:"19:45", title:"Farewell",                text:"Happy hearts, on the way home. Thank you for coming." }
+    { at:"16:10", title:"Into the garden",         text:"An open-air evening, tables dressed and waiting." },
+    { at:"16:20", title:"Guests take their seats", text:"Family and friends settle in." },
+    { at:"16:30", title:"The first dance",         text:"Mohamed & Ranim arrive and the floor opens." },
+    { at:"17:15", title:"The rings",               text:"Seated together, Mohamed places the ring on Ranim's hand, then Ranim on his." },
+    { at:"17:30", title:"Let's celebrate",         text:"Applause, music and everyone back on the floor." },
+    { at:"18:00", title:"Dinner is served",        text:"Take a seat and enjoy." },
+    { at:"18:45", title:"A slow dance",            text:"Under the lights, as the night settles." },
+    { at:"19:30", title:"Farewell",                text:"Happy hearts, on the way home. Thank you for coming." }
   ];
   var END = "20:00";
   var EVENT_START_ISO = "2026-12-21T16:00:00+02:00";   // Cairo time
@@ -872,17 +878,24 @@
       el("path",{d:"M"+(f[0]+Math.cos(an)*r1).toFixed(1)+" "+(f[1]+Math.sin(an)*r1).toFixed(1)+"L"+(f[0]+Math.cos(an)*r2).toFixed(1)+" "+(f[1]+Math.sin(an)*r2).toFixed(1)},g);
       el("circle",{cx:(f[0]+Math.cos(an)*(r2+9)).toFixed(1),cy:(f[1]+Math.sin(an)*(r2+9)).toFixed(1),r:2.2,fill:f[2],stroke:"none"},g)}
   });
-  // speech bubbles: [x, y, text, from, to]
-  var bubbles=[];
+  // speech bubbles: [x, y, text, from, to] — real HTML text placed over the drawing so it stays sharp on phones
+  var bubbles=[], VB=null;
   [[1072,872,"Where's the couple?",2.55,2.95],[505,874,"So cute!",3.45,3.82],[505,874,"Mabrouk!",4.86,5.6],[1098,872,"Lolololeey!",4.92,5.7],
    [580,912,"Best night ever!",8.25,8.75]].forEach(function(b){
-    var w=b[2].length*9.2+26, o=el("g",{opacity:0},$("bubbles")), g=el("g",{"class":"bubble"},o);
-    el("path",{d:"M"+(b[0]-8)+" "+(b[1]+14)+"l8 12 8-12z",fill:"#fffdf8",stroke:"#cdb796","stroke-width":1.5},g);
-    el("rect",{x:b[0]-w/2,y:b[1]-18,width:w,height:34,rx:17,fill:"#fffdf8",stroke:"#cdb796","stroke-width":1.5},g);
-    el("rect",{x:b[0]-7,y:b[1]+12,width:14,height:4,fill:"#fffdf8"},g);
-    var t=el("text",{x:b[0],y:b[1]+5,"text-anchor":"middle","font-family":"'Cormorant Garamond','Times New Roman',serif","font-weight":600,"font-style":"italic","font-size":18,fill:"#5a4132"},g);t.textContent=b[2];
-    bubbles.push({el:o,a:b[3],b:b[4]});
+    var e=document.createElement("span");e.textContent=b[2];$("talk").appendChild(e);
+    bubbles.push({el:e,x:b[0],y:b[1],a:b[3],b:b[4]});
   });
+  function placeTalk(){
+    if(!VB)return;
+    bubbles.forEach(function(b){
+      var px=(b.x-VB[0])/VB[2]*VB[4], py=(b.y+10-VB[1])/VB[3]*VB[5], w=b.el.offsetWidth, h=b.el.offsetHeight;
+      var left=Math.round(clamp(px-w/2,8,VB[4]-w-8));
+      b.el.style.left=left+"px";b.el.style.top=Math.round(py-h-8)+"px";
+      b.el.style.setProperty("--tail",clamp(px-left,18,w-18)+"px");
+    });
+  }
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(placeTalk);
+  window.addEventListener("load",placeTalk);
   // dancers on the floor: [x, y] for the party, [x, y] when paired up for the slow dance
   var dancers=[];
   [ [598,1040, 606,1046,"pl","d0",{kind:"m",i:0}],                    [640,1062, 634,1046,"pr","d3",{kind:"f",i:0,scarf:"#f3e9d8"}],
@@ -965,6 +978,7 @@
     var w=window.innerWidth,h=$("stage").clientHeight||window.innerHeight,a=w/h,vw,vh,y0;
     if(a>=0.85){vh=900;vw=900*a;y0=350}else{vw=760;vh=760/a;y0=1000-vh*0.7}
     scene.setAttribute("viewBox",(800-vw/2)+" "+y0+" "+vw+" "+vh);
+    VB=[800-vw/2,y0,vw,vh,w,h];placeTalk();
   }
   function setCaption(i){
     var cap=$("caption");cap.classList.add("swap");clearTimeout(swapTimer);
@@ -1039,7 +1053,7 @@
     $("plane").setAttribute("transform","translate("+(-250+pt*2700).toFixed(1)+","+(560-pt*60).toFixed(1)+")");
     $("plane").setAttribute("opacity",pt>0&&pt<1?1:0);
     $("fireworks").setAttribute("opacity",sm(8.2,8.45,c));
-    bubbles.forEach(function(b){b.el.setAttribute("opacity",sm(b.a,b.a+.07,c)*(1-sm(b.b-.07,b.b,c)))});
+    bubbles.forEach(function(b){b.el.style.opacity=sm(b.a,b.a+.07,c)*(1-sm(b.b-.07,b.b,c))});
 
     // waiters
     var wIn=sm(6.05,6.35,c), wOut=sm(6.6,6.9,c);
